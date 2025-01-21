@@ -1,5 +1,6 @@
 #include <FS.h>
 #include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
 
 // for ESP-01S it has to be changed to GPIO2
 #define LED_BUILTIN 2
@@ -63,11 +64,17 @@ void setup() {
 
   Serial.println("Connected to WiFi");
   Serial.println("ESP8266 IP address: " + WiFi.localIP().toString());
+
+  if (!MDNS.begin("esp-01s"))
+  { 
+    Serial.println("Error setting up MDNS responder!");
+  }
+  Serial.println("mDNS responder started");
 }
 
 void loop() {
+  MDNS.update();
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-  Serial.println("I am alive");
   Serial.println("ESP8266 IP address: " + WiFi.localIP().toString());
   delay(500);
 }
