@@ -1,5 +1,5 @@
-#include <Arduino.h>
 #include <FS.h>
+#include <ESP8266WiFi.h>
 
 // for ESP-01S it has to be changed to GPIO2
 #define LED_BUILTIN 2
@@ -53,10 +53,21 @@ void setup() {
   Serial.println(ssid);
   Serial.print("Password: ");
   Serial.println(password);
+
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(1000);
+    Serial.println("Connecting to WiFi...");
+  }
+
+  Serial.println("Connected to WiFi");
+  Serial.println("ESP8266 IP address: " + WiFi.localIP().toString());
 }
 
 void loop() {
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
   Serial.println("I am alive");
+  Serial.println("ESP8266 IP address: " + WiFi.localIP().toString());
   delay(500);
 }
