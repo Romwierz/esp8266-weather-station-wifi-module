@@ -1,6 +1,9 @@
 #include <FS.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
+#ifdef WITH_GDB
+#include <GDBStub.h>
+#endif
 
 // for ESP-01S it has to be changed to GPIO2
 #define LED_BUILTIN 2
@@ -42,6 +45,11 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(115200);
   delay(10);
+
+  #ifdef WITH_GDB
+  gdbstub_init();
+  gdb_do_break();
+  #endif
 
   if (!SPIFFS.begin())
   {
