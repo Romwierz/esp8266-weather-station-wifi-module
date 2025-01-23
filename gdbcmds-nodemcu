@@ -1,4 +1,4 @@
-# Run ~/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-gdb.exe -x gdbcmds
+# Run ~/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-gdb.exe -x gdbcmds-nodemcu
 # in order to start debugging
 # ESP8266 HW limits the number of breakpoints/watchpoints
 set remote hardware-breakpoint-limit 1
@@ -16,7 +16,7 @@ mem 0x40100000 0x4013ffff rw cache
 mem 0x40140000 0x5fffffff ro cache
 mem 0x60000000 0x60001fff rw
 # Locate the ELF file
-file .pio/build/debug_esp01_1m/firmware.elf
+file .pio/build/debug_nodemcuv2/firmware.elf
 # Change the following to your serial port and baud
 set serial baud 115200
-target remote \\.\COM12
+target remote \\.\COM9

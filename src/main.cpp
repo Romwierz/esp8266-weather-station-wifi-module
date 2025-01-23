@@ -5,8 +5,10 @@
 #include <GDBStub.h>
 #endif
 
+#ifndef NODEMCU
 // for ESP-01S it has to be changed to GPIO2
 #define LED_BUILTIN 2
+#endif
 
 char ssid[32];
 char password[32];
