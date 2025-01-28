@@ -5,6 +5,8 @@
 #include <GDBStub.h>
 #endif
 
+#include "certs.h"
+
 #ifndef NODEMCU
 // for ESP-01S it has to be changed to GPIO2
 #define LED_BUILTIN 2
