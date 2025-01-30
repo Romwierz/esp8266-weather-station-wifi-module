@@ -1,7 +1,7 @@
 #pragma once
 
-#define METEO_IMGW "meteo.imgw.pl"
-#define W3 "jigsaw.w3.org"
+#define METEO_IMGW  "meteo.imgw.pl"
+#define W3          "jigsaw.w3.org"
 
 const uint16_t port = 443;
 

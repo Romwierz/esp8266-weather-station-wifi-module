@@ -1,6 +1,8 @@
 #include <FS.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
+#include <ESP8266HTTPClient.h>
+#include <WiFiClientSecureBearSSL.h>
 #ifdef WITH_GDB
 #include <GDBStub.h>
 #endif
@@ -11,9 +13,17 @@
 // for ESP-01S it has to be changed to GPIO2
 #define LED_BUILTIN 2
 #endif
+#define FLASH_BTN D3
+#define BTN_PRESSED(x) !digitalRead(x)
 
 char ssid[32];
 char password[32];
+
+const char* headerKeys[] = {"date", "server"};
+const size_t numberOfHeaders = 2;
+
+unsigned long ledBlinkPreviousTime;
+const unsigned long ledBlinkInterval = 1000;
 
 void readConfig()
 {
@@ -45,8 +55,59 @@ void readConfig()
   file.close();
 }
 
+void httpsClient(const char* host, const char* uri)
+{
+  if (WiFi.status() == WL_CONNECTED)
+  {
+    std::unique_ptr<BearSSL::WiFiClientSecure> client(new BearSSL::WiFiClientSecure);
+
+    if (strcmp(host, METEO_IMGW) == 0) {
+      client->setFingerprint(fingerprint_imgw_pl);
+    }
+    else if (strcmp(host, W3) == 0) {
+      client->setFingerprint(fingerprint_w3_org);
+    }
+
+    HTTPClient https;
+
+    Serial.print("[HTTPS] begin...\n");
+    if (https.begin(*client, host, port, uri)) {
+      
+      Serial.print("[HTTPS] GET...\n");
+      Serial.printf("[HTTPS] Host: %s\n", host);
+
+      https.collectHeaders(headerKeys, numberOfHeaders);
+      int httpCode = https.GET();
+
+      if (httpCode > 0) {
+        // HTTP header has been send and Server response header has been handled
+        Serial.printf("[HTTPS] GET... code: %d\n", httpCode);
+
+        if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
+          Serial.println("[HTTPS] Headers:");
+          for (int i = 0; i < https.headers(); i++) {
+            String headerName = https.headerName(i);
+            String headerValue = https.header(i);
+            Serial.println(i);
+            Serial.printf("%s: %s\n", headerName.c_str(), headerValue.c_str());
+          }
+          String payload = https.getString();
+          Serial.println(payload);
+        }
+      } else {
+        Serial.printf("[HTTPS] GET... failed, error: %s\n", https.errorToString(httpCode).c_str());
+      }
+
+      https.end();
+    } else {
+      Serial.println("[HTTPS] Unable to connect");
+    }
+  }
+}
+
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(FLASH_BTN, INPUT);
   Serial.begin(115200);
   delay(10);
 
@@ -64,8 +125,6 @@ void setup() {
   readConfig();
   Serial.print("SSID: ");
   Serial.println(ssid);
-  Serial.print("Password: ");
-  Serial.println(password);
 
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED)
@@ -82,11 +141,24 @@ void setup() {
     Serial.println("Error setting up MDNS responder!");
   }
   Serial.println("mDNS responder started");
+
+  ledBlinkPreviousTime = millis();
 }
 
 void loop() {
   MDNS.update();
-  digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-  Serial.println("ESP8266 IP address: " + WiFi.localIP().toString());
-  delay(500);
+  
+  unsigned long ledBlinkDiff = millis() - ledBlinkPreviousTime;
+  if(ledBlinkDiff > ledBlinkInterval)
+  {
+    Serial.println("ESP8266 IP address: " + WiFi.localIP().toString());
+    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+    ledBlinkPreviousTime += ledBlinkDiff;
+  }
+
+  if (BTN_PRESSED(FLASH_BTN))
+  {
+    httpsClient(METEO_IMGW, "/");
+    delay(200);
+  }
 }
