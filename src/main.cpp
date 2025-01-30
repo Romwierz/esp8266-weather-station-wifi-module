@@ -18,6 +18,8 @@
 
 char ssid[32];
 char password[32];
+char api_key[40];
+char api_call_uri[100];
 
 const char* headerKeys[] = {"date", "server"};
 const size_t numberOfHeaders = 2;
@@ -50,6 +52,11 @@ void readConfig()
       line.remove(0, 9);  // Remove the "password:" part
       line.toCharArray(password, sizeof(password));
     }
+    else if (line.startsWith("api_key:"))
+    {
+      line.remove(0, 8);  // Remove the "api_key:" part
+      line.toCharArray(api_key, sizeof(api_key));
+    }
   }
 
   file.close();
@@ -66,6 +73,9 @@ void httpsClient(const char* host, const char* uri)
     }
     else if (strcmp(host, W3) == 0) {
       client->setFingerprint(fingerprint_w3_org);
+    }
+    else if (strcmp(host, API_OPEN_WEATHER_MAP) == 0) {
+      client->setFingerprint(fingerprint_open_weather_map_org);
     }
 
     HTTPClient https;
@@ -123,6 +133,7 @@ void setup() {
   }
 
   readConfig();
+  snprintf(api_call_uri, sizeof(api_call_uri), "/data/2.5/weather?q=Warsaw&appid=%s", api_key);
   Serial.print("SSID: ");
   Serial.println(ssid);
 
@@ -151,14 +162,14 @@ void loop() {
   unsigned long ledBlinkDiff = millis() - ledBlinkPreviousTime;
   if(ledBlinkDiff > ledBlinkInterval)
   {
-    Serial.println("ESP8266 IP address: " + WiFi.localIP().toString());
     digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     ledBlinkPreviousTime += ledBlinkDiff;
   }
 
   if (BTN_PRESSED(FLASH_BTN))
   {
-    httpsClient(METEO_IMGW, "/");
+    Serial.println("ESP8266 IP address: " + WiFi.localIP().toString());
+    httpsClient(API_OPEN_WEATHER_MAP, api_call_uri);
     delay(200);
   }
 }
