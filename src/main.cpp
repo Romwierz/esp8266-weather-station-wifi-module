@@ -1,6 +1,7 @@
 #include "config.h"
 #include "network_manager.h"
 #include "https_client.h"
+#include "uart_comm.h"
 
 #ifdef WITH_GDB
 #include <GDBStub.h>
@@ -15,6 +16,8 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(FLASH_BTN, INPUT);
   Serial.begin(115200);
+  delay(10);
+  Serial1.begin(115200);
   delay(10);
 
   #ifdef WITH_GDB
@@ -44,7 +47,7 @@ void loop() {
   {
     showIPAddress();
     Serial.println("Downloading weather data...");
-    httpsClient(API_OPEN_WEATHER_MAP, api_call_uri);
+    test_uart_transmit();
     delay(200);
   }
 }

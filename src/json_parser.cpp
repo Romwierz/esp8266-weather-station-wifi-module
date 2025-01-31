@@ -1,4 +1,5 @@
 #include "json_parser.h"
+#include "uart_comm.h"
 
 void parseWeatherData(const String &payload) {
     JsonDocument doc;
@@ -18,4 +19,5 @@ void parseWeatherData(const String &payload) {
 
     Serial.printf("Temp: %.2f°C, Feels like: %.2f°C, Humidity: %d%%, Pressure: %d hPa\n",
                   temp, feels_like, humidity, pressure);
+    uart_transmit(temp, feels_like, humidity, pressure, wind_speed);
 }
