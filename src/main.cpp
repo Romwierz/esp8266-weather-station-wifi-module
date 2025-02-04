@@ -9,8 +9,13 @@
 
 #include "certs.h"
 
-unsigned long ledBlinkPreviousTime;
-const unsigned long ledBlinkInterval = 1000;
+Weather_data_t testParsedData = {
+  .temp = 1,
+  .feels_like = 2,
+  .humidity = 3,
+  .pressure = 4,
+  .wind_speed = 50
+};
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
@@ -29,25 +34,16 @@ void setup() {
   setupNetwork(ssid, password);
 
   snprintf(api_call_uri, sizeof(api_call_uri), "/data/2.5/weather?q=Warsaw&lang=pl&appid=%s&units=metric", api_key);
-
-  ledBlinkPreviousTime = millis();
 }
 
 void loop() {
   updateNetwork();
-  
-  unsigned long ledBlinkDiff = millis() - ledBlinkPreviousTime;
-  if(ledBlinkDiff > ledBlinkInterval)
-  {
-    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-    ledBlinkPreviousTime += ledBlinkDiff;
-  }
 
   if (BTN_PRESSED(FLASH_BTN))
   {
     showIPAddress();
     Serial.println("Downloading weather data...");
-    test_uart_transmit();
+    uart_transmit(&testParsedData);
     delay(200);
   }
 }
