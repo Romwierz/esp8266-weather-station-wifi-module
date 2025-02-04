@@ -1,6 +1,8 @@
 #include "json_parser.h"
 #include "uart_comm.h"
 
+Weather_data_t parsedData;
+
 void parseWeatherData(const String &payload) {
     JsonDocument doc;
     DeserializationError error = deserializeJson(doc, payload);
@@ -11,13 +13,13 @@ void parseWeatherData(const String &payload) {
         return;
     }
 
-    float temp = doc["main"]["temp"];
-    float feels_like = doc["main"]["feels_like"];
-    int humidity = doc["main"]["humidity"];
-    int pressure = doc["main"]["pressure"];
-    float wind_speed = doc["wind"]["speed"];
+    parsedData.temp = (int) doc["main"]["temp"];
+    parsedData.feels_like = (int) doc["main"]["feels_like"];
+    parsedData.humidity = doc["main"]["humidity"];
+    parsedData.pressure = doc["main"]["pressure"];
+    parsedData.wind_speed = (int) doc["wind"]["speed"];
 
-    Serial.printf("Temp: %.2f°C, Feels like: %.2f°C, Humidity: %d%%, Pressure: %d hPa\n",
-                  temp, feels_like, humidity, pressure);
-    uart_transmit(temp, feels_like, humidity, pressure, wind_speed);
+    Serial.printf("Temp: %d°C, Feels like: %d°C, Humidity: %d%%, Pressure: %d hPa\n",
+                  parsedData.temp, parsedData.feels_like, parsedData.humidity, parsedData.pressure);
+    uart_transmit(&parsedData);
 }
