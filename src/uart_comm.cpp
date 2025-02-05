@@ -1,8 +1,10 @@
 #include "uart_comm.h"
 #include <Arduino.h>
 
-void uart_transmit(Weather_data_t* data) {
-    char tx_data[100];
+char tx_data[100];
+STM32_STATE stm_state = STM32_IDLE;
+
+void uart_transmit_size(Weather_data_t* data) {
     size_t tx_data_size = 0;
 
     snprintf(tx_data, 100, "%d,%d,%d,%d,%d",
@@ -17,7 +19,7 @@ void uart_transmit(Weather_data_t* data) {
     {
         tx_data_size++;
     }
-    
+
     // make sure that size info is 3 bytes long
     if (tx_data_size < 10U) {
         Serial1.printf("00%d", tx_data_size);
@@ -29,7 +31,10 @@ void uart_transmit(Weather_data_t* data) {
         // not wanted
     }
 
-    delay(20);
+    stm_state = STM32_IDLE;
+}
 
+void uart_transmit_data() {
     Serial1.print(tx_data);
+    stm_state = STM32_IDLE;
 }

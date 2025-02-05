@@ -2,8 +2,9 @@
 #include "config.h"
 #include "json_parser.h"
 #include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
 #include <WiFiClientSecureBearSSL.h>
+
+String httpResponsePayload;
 
 void httpsClient(const char* host, const char* uri) {
     if (WiFi.status() != WL_CONNECTED) return;
@@ -21,8 +22,7 @@ void httpsClient(const char* host, const char* uri) {
         if (httpCode > 0) {
             Serial.printf("[HTTPS] Response code: %d\n", httpCode);
             if (httpCode == HTTP_CODE_OK) {
-                String payload = https.getString();
-                parseWeatherData(payload);
+                httpResponsePayload = https.getString();
             }
         } else {
             Serial.printf("[HTTPS] Error: %s\n", https.errorToString(httpCode).c_str());

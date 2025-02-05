@@ -21,5 +21,4 @@ void parseWeatherData(const String &payload) {
 
     Serial.printf("Temp: %d°C, Feels like: %d°C, Humidity: %d%%, Pressure: %d hPa\n",
                   parsedData.temp, parsedData.feels_like, parsedData.humidity, parsedData.pressure);
-    uart_transmit(&parsedData);
 }
