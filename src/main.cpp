@@ -73,9 +73,11 @@ void loop() {
   if (stm_state == STM32_REQ_SIZE) {
     showIPAddress();
     Serial.println("Downloading weather data...");
-    // httpsClient(API_OPEN_WEATHER_MAP, api_call_uri);
-    // parseWeatherData(httpResponsePayload);
-    
+#ifndef TEST_DATA
+    httpsClient(API_OPEN_WEATHER_MAP, api_call_uri);
+    parseWeatherData(httpResponsePayload);
+    uart_transmit_size(&parsedData);
+#else
     if (data_selector == 0) {
       uart_transmit_size(&testParsedData);
       data_selector = 1;
@@ -84,11 +86,9 @@ void loop() {
       uart_transmit_size(&testParsedData2);
       data_selector = 0;
     }
-    
-    ESP8266_SENT_SIZE = true;
+#endif  
   } else if (stm_state == STM32_REQ_DATA) {
     Serial.println("Sending weather data...\n");
     uart_transmit_data();
-    ESP8266_SENT_SIZE = false;
   }
 }
