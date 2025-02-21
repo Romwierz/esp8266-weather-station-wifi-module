@@ -4,11 +4,15 @@
 #include <ArduinoJson.h>
 
 typedef struct {
+    int id;
     int temp;
     int feels_like;
-    int humidity;
     int pressure;
+    int humidity;
+    int visibility;
     int wind_speed;
+    int wind_deg;
+    int clouds;
 } Weather_data_t;
 
 extern Weather_data_t parsedData;
