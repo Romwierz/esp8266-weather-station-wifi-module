@@ -9,23 +9,30 @@
 
 #include "certs.h"
 
-bool ESP8266_SENT_SIZE = false;
 int data_selector = 0;
 
 Weather_data_t testParsedData = {
-  .temp = 1,
-  .feels_like = 2,
-  .humidity = 3,
-  .pressure = 4,
-  .wind_speed = 5005
+  .id = 800,
+  .temp = 11,
+  .feels_like = 13,
+  .pressure = 999,
+  .humidity = 55,
+  .visibility = 10000,
+  .wind_speed = 121,
+  .wind_deg = 280,
+  .clouds = 75
 };
 
 Weather_data_t testParsedData2 = {
-  .temp = 1,
-  .feels_like = 2,
-  .humidity = 3,
-  .pressure = 4,
-  .wind_speed = 5
+  .id = 500,
+  .temp = -2,
+  .feels_like = -3,
+  .pressure = 1012,
+  .humidity = 71,
+  .visibility = 8000,
+  .wind_speed = 89,
+  .wind_deg = 95,
+  .clouds = 30
 };
 
 Weather_data_t data = testParsedData;

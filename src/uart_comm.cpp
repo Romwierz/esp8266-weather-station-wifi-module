@@ -3,16 +3,21 @@
 
 char tx_data[100];
 STM32_STATE stm_state = STM32_IDLE;
+bool ESP8266_SENT_SIZE = false;
 
 void uart_transmit_size(Weather_data_t* data) {
     size_t tx_data_size = 0;
 
-    snprintf(tx_data, 100, "%d,%d,%d,%d,%d",
+    snprintf(tx_data, sizeof(tx_data), "%d,%d,%d,%d,%d,%d,%d,%d,%d",
+    data->id,
     data->temp,
     data->feels_like,
-    data->humidity,
     data->pressure,
-    data->wind_speed);
+    data->humidity,
+    data->visibility,
+    data->wind_speed,
+    data->wind_deg,
+    data->clouds);
     
     // check for null character
     for (size_t i = 0; tx_data[i] > 0; i++)
@@ -28,13 +33,16 @@ void uart_transmit_size(Weather_data_t* data) {
     } else if (tx_data_size < 1000U) {
         Serial1.print(tx_data_size);
     } else {
-        // not wanted
+        ESP8266_SENT_SIZE = false;
+        return;
     }
 
+    ESP8266_SENT_SIZE = true;
     stm_state = STM32_IDLE;
 }
 
 void uart_transmit_data() {
     Serial1.print(tx_data);
+    ESP8266_SENT_SIZE = false;
     stm_state = STM32_IDLE;
 }

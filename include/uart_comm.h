@@ -10,6 +10,7 @@ enum STM32_STATE {
 };
 
 extern STM32_STATE stm_state;
+extern bool ESP8266_SENT_SIZE;
 
 void uart_transmit_size(Weather_data_t* data);
 void uart_transmit_data();
