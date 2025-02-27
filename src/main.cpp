@@ -97,5 +97,6 @@ void loop() {
   } else if (stm_state == STM32_REQ_DATA) {
     Serial.println("Sending weather data...\n");
     uart_transmit_data();
+    ESP.deepSleep(0);
   }
 }
