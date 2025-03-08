@@ -54,7 +54,6 @@ IRAM_ATTR void dataRequestCallback() {
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(FLASH_BTN, INPUT);
   pinMode(INT_PIN, INPUT);
   Serial.begin(115200);
   delay(10);

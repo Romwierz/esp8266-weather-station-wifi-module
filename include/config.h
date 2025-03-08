@@ -7,8 +7,7 @@
 // for ESP-01S it has to be changed to GPIO2
 #define LED_BUILTIN 2
 #endif
-#define FLASH_BTN D3
-#define INT_PIN D5
+#define INT_PIN 3
 #define BTN_PRESSED(x) !digitalRead(x)
 
 extern char ssid[32];
