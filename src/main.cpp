@@ -55,9 +55,9 @@ IRAM_ATTR void dataRequestCallback() {
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(INT_PIN, INPUT);
-  Serial.begin(115200);
+  Serial.begin(115200, SERIAL_8N1, SERIAL_TX_ONLY);
   delay(10);
-  Serial1.begin(115200);
+  Serial1.begin(115200, SERIAL_8N1, SERIAL_TX_ONLY);
   delay(10);
 
   #ifdef WITH_GDB
